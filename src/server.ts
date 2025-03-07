@@ -1,22 +1,43 @@
+/* eslint-disable no-undef */
+
 import Fastify from 'fastify';
-import userRoutes from './interface/http/routes/userRoutes';
+import userRoutes from './features/auth/domain/routes/userRoutes';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import fastifySwagger from '@fastify/swagger';
 import fastifyRateLimit from '@fastify/rate-limit';
-import { loggerConfig } from './config/logger';
-import { GlobalException } from './interface/http/middlewares/GlobalException';
+import { logger, loggerConfig } from './config/logger';
+import { GlobalException } from './core/exceptions/GlobalException';
+import fastifySession from '@fastify/session';
+import { connectToDatabase } from '@config/database';
+import { config } from '@config/env';
+import fastifyCookie from '@fastify/cookie';
 
 const fastify = Fastify({ logger: loggerConfig });
+
+// Ajout du support des cookies (nécessaire pour Fastify-Session)
+fastify.register(fastifyCookie);
+
+// Configuration de Fastify-Session
+fastify.register(fastifySession, {
+  secret: config.security.sessionSecret,
+  cookie: {
+    secure: false,
+    httpOnly: true,
+    sameSite: 'lax',
+  },
+  saveUninitialized: false,
+});
 
 fastify.addHook('onRequest', (req, reply, done) => {
   req.log.info(`📡 Requête reçue: ${req.method} ${req.url}`);
   done();
 });
 
+// Enregistrement de Swagger
 fastify.register(fastifySwagger, {
   swagger: {
     info: {
-      title: 'Boilerplate API',
+      title: 'Teleese API',
       description: 'API documentation',
       version: '1.0.0',
     },
@@ -29,16 +50,17 @@ fastify.register(fastifySwagger, {
     },
   },
 });
-
-fastify.register(fastifySwaggerUi, { routePrefix: '/docs' });
+fastify.register(fastifySwaggerUi, {
+  routePrefix: `${config.server.prefix}/docs`,
+});
 
 // Limitation de requêtes (100 par minute)
 fastify.register(fastifyRateLimit, {
-  max: 100, // Max 100 requêtes par minute
+  max: 100,
   timeWindow: '1 minute',
   cache: 10000,
   keyGenerator: (req) => req.ip,
-  allowList: ['127.0.0.1'], // Autoriser certaines IPs si nécessaire
+  allowList: ['127.0.0.1'],
   errorResponseBuilder: (req, context) => ({
     statusCode: 429,
     error: 'Too Many Requests',
@@ -52,13 +74,18 @@ fastify.setErrorHandler(GlobalException);
 
 export const startServer = async () => {
   try {
-    await fastify.listen({ port: 3000 });
-    console.log("Server running on http://localhost:3000");
-    return fastify; // ✅ Retourne l'instance Fastify
+    // Connexion MongoDB
+    await connectToDatabase();
+
+    await fastify.listen({ port: config.server.port });
+    logger.info('Server running');
+    return fastify;
   } catch (error) {
-    console.error(error);
-    process.exit(1);
+    logger.error(error);
+    if (config.server.env === 'production') process.exit(1);
   }
 };
 
 startServer();
+
+export { fastify };
