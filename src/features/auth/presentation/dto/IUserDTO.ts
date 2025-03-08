@@ -3,12 +3,13 @@
  */
 export interface IUserDTO {
   id: string;
-  keycloakId: string;
-  userName: string;
+  username: string;
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
-  role?: string;
+  emailVerified: boolean;
+  roles: string[];
+  companyRoles: any[];
   createdAt: Date;
   updatedAt: Date;
 }

@@ -5,23 +5,25 @@ import { IUserDTO } from './IUserDTO';
  */
 export class UserDTO implements IUserDTO {
   id: string;
-  keycloakId: string;
-  userName: string;
+  username: string;
+  email: string;
   firstName: string;
   lastName: string;
-  email: string;
-  role?: string;
+  emailVerified: boolean;
+  roles: string[];
+  companyRoles: any[];
   createdAt: Date;
   updatedAt: Date;
 
   constructor(user: IUserDTO) {
     this.id = user.id;
-    this.keycloakId = user.keycloakId;
-    this.userName = user.userName;
+    this.username = user.username;
     this.firstName = user.firstName;
     this.lastName = user.lastName;
     this.email = user.email;
-    this.role = user.role;
+    this.emailVerified = user.emailVerified;
+    this.roles = user.roles;
+    this.companyRoles = user.companyRoles;
     this.createdAt = user.createdAt;
     this.updatedAt = user.updatedAt;
   }

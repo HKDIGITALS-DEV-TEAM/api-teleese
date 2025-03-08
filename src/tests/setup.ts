@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import { fastify } from 'src/server';
 
 let mongoServer: MongoMemoryServer;
 
@@ -8,6 +9,8 @@ let mongoServer: MongoMemoryServer;
  * Démarre un serveur MongoDB en mémoire avant les tests.
  */
 beforeAll(async () => {
+  await fastify.ready();
+
   mongoServer = await MongoMemoryServer.create();
   const mongoUri = mongoServer.getUri();
 
@@ -33,6 +36,8 @@ afterEach(async () => {
  * Arrête MongoDB après les tests.
  */
 afterAll(async () => {
+  await fastify.close();
+
   if (mongoose.connection.readyState === 1) {
     await mongoose.connection.close();
   }

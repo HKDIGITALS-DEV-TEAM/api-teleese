@@ -11,6 +11,7 @@ import fastifySession from '@fastify/session';
 import { connectToDatabase } from '@config/database';
 import { config } from '@config/env';
 import fastifyCookie from '@fastify/cookie';
+import { companyRoutes } from '@features/company/domain/controller/CompanyController';
 
 const fastify = Fastify({ logger: loggerConfig });
 
@@ -19,7 +20,7 @@ fastify.register(fastifyCookie);
 
 // Configuration de Fastify-Session
 fastify.register(fastifySession, {
-  secret: config.security.sessionSecret,
+  secret: config.server.secret,
   cookie: {
     secure: false,
     httpOnly: true,
@@ -42,10 +43,11 @@ fastify.register(fastifySwagger, {
       version: '1.0.0',
     },
     securityDefinitions: {
-      bearerAuth: {
+      BearerAuth: {
         type: 'apiKey',
         name: 'Authorization',
         in: 'header',
+        description: 'Ajoutez "Bearer <TOKEN>" pour s\'authentifier.',
       },
     },
   },
@@ -68,7 +70,9 @@ fastify.register(fastifyRateLimit, {
   }),
 });
 
-fastify.register(userRoutes);
+// Enregistrement des routes
+fastify.register(userRoutes, { prefix: '/api/v1' });
+fastify.register(companyRoutes, { prefix: '/api/v1' });
 
 fastify.setErrorHandler(GlobalException);
 
