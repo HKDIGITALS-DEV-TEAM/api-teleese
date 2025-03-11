@@ -11,7 +11,7 @@ import fastifySession from '@fastify/session';
 import { connectToDatabase } from '@config/database';
 import { config } from '@config/env';
 import fastifyCookie from '@fastify/cookie';
-import { companyRoutes } from '@features/company/domain/controller/CompanyController';
+import companyRoutes from '@features/company/domain/routes/companyRoutes';
 
 const fastify = Fastify({ logger: loggerConfig });
 

@@ -1,41 +1,27 @@
-import mongoose, { Schema, Model } from 'mongoose';
+import mongoose, { Schema, Document } from 'mongoose';
 import { ICompany } from './interfaces/ICompany';
-import { BaseEntitySchema } from '@core/base/base-entity';
 
 /**
- * Schéma Mongoose pour stocker les compagnies.
+ * Schéma Mongoose pour une compagnie.
  */
-const CompanySchema: Schema<ICompany> = new Schema(
+const CompanySchema: Schema = new Schema(
   {
-    ownerId: { type: String, required: true },
+    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String, required: true },
-    description: { type: String, required: true },
-    category: { type: String, required: true },
-    questions: [
+    description: { type: String, required: false },
+    category: { type: Schema.Types.ObjectId, ref: 'CompanyCategory' },
+    users: [
       {
-        question: String,
-        type: {
-          type: String,
-          enum: [
-            'text',
-            'file',
-            'email',
-            'password',
-            'number',
-            'audio',
-            'single_choice',
-            'multiple_choice',
-          ],
-          required: true,
-        },
-        options: [String],
+        user: { type: Schema.Types.ObjectId, ref: 'User' },
+        role: { type: String, required: true, default: 'admin' },
       },
     ],
+    configurations: { type: Object, default: {} },
+    aiOptions: { type: Array, default: [] },
   },
   { timestamps: true }
 );
 
-// Ajouter les champs de base (BaseEntity)
-CompanySchema.add(BaseEntitySchema);
+const Company = mongoose.model<ICompany & Document>('Company', CompanySchema);
 
-export const Company: Model<ICompany> = mongoose.model<ICompany>('Company', CompanySchema);
+export { Company };

@@ -14,16 +14,21 @@ import { UpdateUserRequest } from '@features/auth/presentation/request/UpdateUse
 import { RegisterRequest } from '@features/auth/presentation/request/RegisterRequest';
 import ms from 'ms';
 import { MailService } from '@infrastructure/mailer/MailService';
+import { RoleDAOImpl } from '@features/auth/data/dao/RoleDAOImpl';
+import { IRoleDAO } from '@features/auth/data/dao/IRoleDAO';
+import { IUserDAO } from '@features/auth/data/dao/IUserDAO';
 
 /**
  * Implémentation du service utilisateur.
  */
 export class UserServiceImpl implements IUserService {
-  private userDAO: UserDAOImpl;
+  private userDAO: IUserDAO;
+  private roleDAO: IRoleDAO;
   private mailService: MailService;
 
   constructor() {
     this.userDAO = new UserDAOImpl();
+    this.roleDAO = new RoleDAOImpl();
     this.mailService = new MailService();
   }
 
@@ -36,6 +41,12 @@ export class UserServiceImpl implements IUserService {
     // Hachage du mot de passe
     const hashedPassword = await bcrypt.hash(request.password, 10);
 
+    // Vérifier si le rôle "user" existe, sinon le créer
+    let userRole = await this.roleDAO.findByName('user');
+    if (!userRole) {
+      userRole = await this.roleDAO.create({ name: 'user' });
+    }
+
     const newUser = await this.userDAO.create({
       username: request.username,
       email: request.email,
@@ -43,6 +54,7 @@ export class UserServiceImpl implements IUserService {
       lastName: request.lastName,
       password: hashedPassword,
       emailVerified: false,
+      roles: [userRole],
     });
 
     // Générer un token de vérification d'email
