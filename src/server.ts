@@ -1,37 +1,53 @@
-/* eslint-disable no-undef */
-
 import Fastify from 'fastify';
-import userRoutes from './features/auth/domain/routes/userRoutes';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import fastifySwagger from '@fastify/swagger';
 import fastifyRateLimit from '@fastify/rate-limit';
-import { logger, loggerConfig } from './config/logger';
-import { GlobalException } from './core/exceptions/GlobalException';
-import fastifySession from '@fastify/session';
+import { logger, loggerConfig } from '@config/logger';
+import { GlobalException } from '@core/exceptions/GlobalException';
 import { connectToDatabase } from '@config/database';
 import { config } from '@config/env';
-import fastifyCookie from '@fastify/cookie';
-import companyRoutes from '@features/company/domain/routes/companyRoutes';
+import { authenticate } from '@core/middlewares/authenticate';
+import { authorize } from '@core/middlewares/authorize';
+import { registerRoutes } from './routes';
+import fastifyMultipart from '@fastify/multipart';
+import path from 'path';
+import fastifyStatic from '@fastify/static';
+import cors from '@fastify/cors';
+import metricsPlugin from 'fastify-metrics';
 
 const fastify = Fastify({ logger: loggerConfig });
 
-// Ajout du support des cookies (nécessaire pour Fastify-Session)
-fastify.register(fastifyCookie);
-
-// Configuration de Fastify-Session
-fastify.register(fastifySession, {
-  secret: config.server.secret,
-  cookie: {
-    secure: false,
-    httpOnly: true,
-    sameSite: 'lax',
-  },
-  saveUninitialized: false,
+fastify.register(cors, {
+  origin: true, // ou ["http://localhost:3000"]
+  credentials: true, // si tu envoies un cookie ou Authorization
+  allowedHeaders: ['Content-Type', 'Authorization'], // important
+  methods: ['GET', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
 });
 
+fastify.register(fastifyMultipart);
+
+fastify.register(fastifyStatic, {
+  root: path.join(path.resolve(), 'public'),
+  prefix: '/',
+});
+
+// Hook lors de la réception d'une requête
 fastify.addHook('onRequest', (req, reply, done) => {
   req.log.info(`📡 Requête reçue: ${req.method} ${req.url}`);
   done();
+});
+
+// Hook pour activer les logs onSend et onError dans Fastify
+fastify.addHook('onSend', async (request, reply, payload) => {
+  request.log.info(`[${request.method}] ${request.url} -> ${reply.statusCode}`);
+  return payload;
+});
+
+fastify.setErrorHandler((error, request, reply) => {
+  request.log.error({ err: error }, '❌ Erreur dans Fastify');
+  reply.status(error.statusCode || 500).send({
+    message: error.message,
+  });
 });
 
 // Enregistrement de Swagger
@@ -53,7 +69,7 @@ fastify.register(fastifySwagger, {
   },
 });
 fastify.register(fastifySwaggerUi, {
-  routePrefix: `${config.server.prefix}/docs`,
+  routePrefix: `/${config.server.prefix}/docs`,
 });
 
 // Limitation de requêtes (100 par minute)
@@ -70,26 +86,34 @@ fastify.register(fastifyRateLimit, {
   }),
 });
 
-// Enregistrement des routes
-fastify.register(userRoutes, { prefix: '/api/v1' });
-fastify.register(companyRoutes, { prefix: '/api/v1' });
-
+// Set du GlobalException
 fastify.setErrorHandler(GlobalException);
+
+// Décorateurs
+fastify.decorate('authenticate', authenticate);
+fastify.decorate('authorize', authorize);
+
+// Enregistrement des metrics
+fastify.register(metricsPlugin, {
+  endpoint: '/metrics', // ⚡ Point d'accès pour Prometheus
+});
 
 export const startServer = async () => {
   try {
     // Connexion MongoDB
     await connectToDatabase();
-
-    await fastify.listen({ port: config.server.port });
-    logger.info('Server running');
+    await registerRoutes(fastify);
+    await fastify.listen({
+      port: Number(config.server.port),
+      host: '0.0.0.0', // 👈 autorise les connexions depuis toutes les interfaces réseau
+    });
+    logger.info(`Server running on ${config.server.baseUrl}`);
     return fastify;
   } catch (error) {
-    logger.error(error);
-    if (config.server.env === 'production') process.exit(1);
+    logger.error('Erreur au démarrage de l’application', error);
+    throw error;
   }
 };
-
 startServer();
 
 export { fastify };

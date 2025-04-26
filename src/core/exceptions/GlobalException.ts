@@ -1,14 +1,16 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { BaseException } from './BaseException';
-import { logger } from '../../config/logger';
+import { logger } from '@config/logger';
+
 export const GlobalException = (error: Error, req: FastifyRequest, reply: FastifyReply) => {
   let statusCode = 500;
   let message = 'Erreur interne du serveur';
 
   if (error instanceof BaseException) {
     statusCode = error.statusCode;
-    message = error.message;
   }
+
+  message = error.message;
 
   logger.error(`[${req.method}] ${req.url} - ${message}`);
 

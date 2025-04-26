@@ -15,12 +15,12 @@ COPY . .
 # Génération build
 RUN npm run build
 
-# Étape 2 : production runner allégé
+# Étape 2 : dev runner allégé
 FROM node:20-bullseye AS runner
 
 WORKDIR /app
 
-ENV NODE_ENV=production
+ENV NODE_ENV=dev
 
 # Copie uniquement les fichiers nécessaires
 COPY --from=builder /app/package.json ./
@@ -35,7 +35,7 @@ RUN chmod +x entrypoint.sh
 RUN mkdir -p /app/logs
 
 # Exposition du port
-EXPOSE 2025
+EXPOSE 9090
 
 # Lancement
 CMD ["./entrypoint.sh"]

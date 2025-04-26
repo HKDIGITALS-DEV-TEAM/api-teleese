@@ -1,0 +1,30 @@
+services:
+  api_dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.uat
+    container_name: teleese_api_dev
+    restart: unless-stopped
+    ports:
+      - '9090:9090'
+    environment:
+      - .env
+    volumes:
+      - logs-volume:/app/logs
+    depends_on:
+      - db
+
+  db:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  logs-volume:
+  mongo_data:

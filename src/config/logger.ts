@@ -6,24 +6,26 @@ import path from 'path';
 import { config } from './env';
 
 // Récupérer l'environnement actuel
-const env = config.server.env || 'development';
+const env = config.server.env;
+const isDev = env === 'development';
 
 // Définir le chemin du fichier log
-const logDir = path.join(__dirname, '../../logs');
-const logFile = path.join(logDir, `api-${env}-log.log`);
+const logDir = path.join(process.cwd(), 'logs');
+const logFile = path.join(logDir, `api-${env}.log`);
 
-// S'assurer que le dossier `logs` existe
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir, { recursive: true });
 }
 
 export const logger = pino(
   {
-    level: config.server.log || 'info',
+    level: config.server.log,
   },
-  pino.destination(logFile)
+  isDev
+    ? pino.destination({ dest: logFile, sync: true })
+    : pino.destination({ dest: logFile, sync: false })
 );
 
 export const loggerConfig = {
-  level: config.server.log || 'info',
+  level: config.server.log,
 };

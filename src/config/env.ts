@@ -12,21 +12,17 @@ export const config = {
   },
   jwt: {
     secret: process.env.JWT_SECRET || 'super_secret_key',
-    refreshSecret: process.env.JWT_REFRESH_SECRET || 'super_refresh_secret_key',
-    accessTokenExpiration: process.env.JWT_ACCESS_EXPIRATION || '15m',
-    refreshTokenExpiration: process.env.JWT_REFRESH_EXPIRATION || '7d',
   },
   regis: {
     host: process.env.REDIS_HOST!,
     port: process.env.REDIS_PORT!,
   },
   server: {
-    port: parseInt(process.env.PORT || '5000'),
+    port: process.env.PORT || 9090,
     env: process.env.NODE_ENV || 'development',
     prefix: process.env.PREFIX_PATH || 'api/v1',
     log: process.env.LOG_LEVEL || 'info',
     baseUrl: process.env.BASE_URL || 'http://localhost:3000',
-    secret: process.env.SESSION_SECRET!,
   },
   openai: {
     key: process.env.OPENAI_API_KEY,
