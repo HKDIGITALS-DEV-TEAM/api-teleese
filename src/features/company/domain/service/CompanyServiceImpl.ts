@@ -9,8 +9,8 @@ import { CompanyCategoryDAOImpl } from '@features/company/data/dao/CompanyCatego
 import { Types } from 'mongoose';
 import { IUserDAO } from '@features/auth/data/dao/IUserDAO';
 import { UserDAOImpl } from '@features/auth/data/dao/UserDAOImpl';
-import { CreateCompanyRequest } from '@features/company/presentation/request/CreateCompanyRequest';
-import { UpdateCompanyRequest } from '@features/company/presentation/request/UpdateCompanyRequest';
+import { CreateCompanyRequest } from '@features/company/presentation/payload/CreateCompanyRequest';
+import { UpdateCompanyRequest } from '@features/company/presentation/payload/UpdateCompanyRequest';
 
 /**
  * Implémentation du service pour la gestion des compagnies.

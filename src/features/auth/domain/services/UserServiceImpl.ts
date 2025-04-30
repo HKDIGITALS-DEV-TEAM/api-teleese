@@ -10,8 +10,8 @@ import { ResourceNotFoundException } from '@core/exceptions/ResourceNotFoundExce
 import bcrypt from 'bcrypt';
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 import { config } from '@config/env';
-import { UpdateUserRequest } from '@features/auth/presentation/request/UpdateUserRequest';
-import { RegisterRequest } from '@features/auth/presentation/request/RegisterRequest';
+import { UpdateUserRequest } from '@features/auth/presentation/payload/UpdateUserRequest';
+import { RegisterRequest } from '@features/auth/presentation/payload/RegisterRequest';
 import ms from 'ms';
 import { MailService } from '@infrastructure/mailer/MailService';
 import { RoleDAOImpl } from '@features/auth/data/dao/RoleDAOImpl';
@@ -115,7 +115,7 @@ export class UserServiceImpl implements IUserService {
     }
 
     try {
-      const payload = jwt.verify(refreshToken, config.jwt.refreshSecret) as { id: string };
+      const payload = jwt.verify(refreshToken, config.jwt.secret) as { id: string };
 
       const user = await this.userDAO.findById(payload.id);
       if (!user) {
@@ -189,7 +189,7 @@ export class UserServiceImpl implements IUserService {
   private generateRefreshToken(user: IUser): string {
     const payload = { id: user.id.toString() };
 
-    const secret: Secret = config.jwt.refreshSecret;
+    const secret: Secret = config.jwt.secret;
     const options: SignOptions = {
       expiresIn: Number(config.jwt.accessTokenExpiration),
     };

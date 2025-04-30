@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { UserServiceImpl } from '@features/auth/domain/services/UserServiceImpl';
-import { RegisterRequest } from '@features/auth/presentation/request/RegisterRequest';
-import { ChangePasswordRequest } from '@features/auth/presentation/request/ChangePasswordRequest';
-import { ResetPasswordRequest } from '@features/auth/presentation/request/ResetPasswordRequest';
-import { VerifyEmailRequest } from '@features/auth/presentation/request/VerifyEmailRequest';
-import { LoginRequest } from '@features/auth/presentation/request/LoginRequest';
+import { RegisterRequest } from '@features/auth/presentation/payload/RegisterRequest';
+import { ChangePasswordRequest } from '@features/auth/presentation/payload/ChangePasswordRequest';
+import { ResetPasswordRequest } from '@features/auth/presentation/payload/ResetPasswordRequest';
+import { VerifyEmailRequest } from '@features/auth/presentation/payload/VerifyEmailRequest';
+import { LoginRequest } from '@features/auth/presentation/payload/LoginRequest';
 
 const userService = new UserServiceImpl();
 

@@ -12,6 +12,8 @@ export const config = {
   },
   jwt: {
     secret: process.env.JWT_SECRET || 'super_secret_key',
+    accessTokenExpiration: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '3600',
+    refreshTokenExpiration: process.env.JWT_REFRESH_TOKEN_EXPIRATION || '30d',
   },
   regis: {
     host: process.env.REDIS_HOST!,
@@ -31,7 +33,7 @@ export const config = {
     host: process.env.MAIL_HOST || 'smtp.gmail.com',
     port: Number(process.env.MAIL_PORT) || 587,
     secure: process.env.MAIL_SECURE === 'true', // True pour SSL, False pour TLS
-    user: process.env.MAIL_USER || 'your-email@example.com',
+    user: process.env.MAIL_USERNAME || 'your-email@example.com',
     password: process.env.MAIL_PASSWORD || 'your-email-password',
     senderName: process.env.MAIL_SENDER_NAME || 'Teleese Support',
   },
