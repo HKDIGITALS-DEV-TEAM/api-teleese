@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+/*eslint-disable @typescript-eslint/no-explicit-any*/
+/*eslint-disable @typescript-eslint/no-require-imports */
 import { startServer } from '../../../../src/server';
 import request from 'supertest';
 import { UserDAOImpl } from '@features/auth/data/dao/UserDAOImpl';

@@ -1,6 +1,7 @@
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { CreateCompanyRequest } from '@features/company/presentation/request/CreateCompanyRequest';
-import { UpdateCompanyRequest } from '@features/company/presentation/request/UpdateCompanyRequest';
+import { CreateCompanyRequest } from '@features/company/presentation/payload/CreateCompanyRequest';
+import { UpdateCompanyRequest } from '@features/company/presentation/payload/UpdateCompanyRequest';
 import { CompanyServiceImpl } from '../service/CompanyServiceImpl';
 
 const companyService = new CompanyServiceImpl();

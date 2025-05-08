@@ -1,5 +1,6 @@
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 import { FastifyRequest, FastifyReply } from 'fastify';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret } from 'jsonwebtoken';
 import { config } from '@config/env';
 import { UserServiceImpl } from '@features/auth/domain/services/UserServiceImpl';
 
@@ -21,7 +22,7 @@ export async function AuthMiddleware(req: FastifyRequest, res: FastifyReply) {
 
     try {
       // Vérification du token d'accès
-      const decoded = jwt.verify(token, config.jwt.secret) as {
+      const decoded = jwt.verify(token, config.jwt.secret as Secret) as {
         id: string;
         email: string;
         roles: string[];

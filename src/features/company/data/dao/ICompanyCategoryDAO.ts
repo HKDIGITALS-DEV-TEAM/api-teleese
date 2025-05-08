@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 import { ICompanyCategory } from '@features/company/data/schema/interfaces/ICompanyCategory';
 
 /**

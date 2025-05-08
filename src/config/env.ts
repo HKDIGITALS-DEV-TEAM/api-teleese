@@ -11,9 +11,12 @@ export const config = {
     database: process.env.MONGO_DATABASE!,
   },
   jwt: {
-    secret: process.env.JWT_SECRET || 'super_secret_key',
+    secret: process.env.JWT_SECRET,
+    refreshSecret: process.env.JWT_REFRESH_SECRET,
+    accessTokenExpiration: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '3600',
+    accessRefreshTokenExpiration: process.env.JWT_REFRESH_TOKEN_EXPIRATION || '30d',
   },
-  regis: {
+  redis: {
     host: process.env.REDIS_HOST!,
     port: process.env.REDIS_PORT!,
   },

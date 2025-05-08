@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 import { ICompany } from '@features/company/data/schema/interfaces/ICompany';
-import { CreateCompanyRequest } from '@features/company/presentation/request/CreateCompanyRequest';
-import { UpdateCompanyRequest } from '@features/company/presentation/request/UpdateCompanyRequest';
+import { CreateCompanyRequest } from '@features/company/presentation/payload/CreateCompanyRequest';
+import { UpdateCompanyRequest } from '@features/company/presentation/payload/UpdateCompanyRequest';
 
 /**
  * Interface du service de gestion des compagnies.

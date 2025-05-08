@@ -10,8 +10,8 @@ import { ResourceNotFoundException } from '@core/exceptions/ResourceNotFoundExce
 import bcrypt from 'bcrypt';
 import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 import { config } from '@config/env';
-import { UpdateUserRequest } from '@features/auth/presentation/request/UpdateUserRequest';
-import { RegisterRequest } from '@features/auth/presentation/request/RegisterRequest';
+import { UpdateUserRequest } from '@features/auth/presentation/payload/UpdateUserRequest';
+import { RegisterRequest } from '@features/auth/presentation/payload/RegisterRequest';
 import ms from 'ms';
 import { MailService } from '@infrastructure/mailer/MailService';
 import { RoleDAOImpl } from '@features/auth/data/dao/RoleDAOImpl';
@@ -115,7 +115,7 @@ export class UserServiceImpl implements IUserService {
     }
 
     try {
-      const payload = jwt.verify(refreshToken, config.jwt.refreshSecret) as { id: string };
+      const payload = jwt.verify(refreshToken, config.jwt.refreshSecret as Secret) as { id: string };
 
       const user = await this.userDAO.findById(payload.id);
       if (!user) {
@@ -173,7 +173,8 @@ export class UserServiceImpl implements IUserService {
       roles: user.roles.map((role) => role.name),
     };
 
-    const secret: Secret = config.jwt.secret;
+    const secret = config.jwt.secret as Secret;
+
     const options: SignOptions = {
       expiresIn: Number(config.jwt.accessTokenExpiration),
     };
@@ -189,7 +190,7 @@ export class UserServiceImpl implements IUserService {
   private generateRefreshToken(user: IUser): string {
     const payload = { id: user.id.toString() };
 
-    const secret: Secret = config.jwt.refreshSecret;
+    const secret= config.jwt.refreshSecret as Secret;
     const options: SignOptions = {
       expiresIn: Number(config.jwt.accessTokenExpiration),
     };
@@ -203,7 +204,7 @@ export class UserServiceImpl implements IUserService {
       throw new ResourceNotFoundException('Utilisateur', email);
     }
 
-    const resetToken = jwt.sign({ id: user._id }, config.jwt.secret, {
+    const resetToken = jwt.sign({ id: user._id }, config.jwt.secret as Secret, {
       expiresIn: Number(ms('1h')), // Expire en 1 heure
     });
 
@@ -212,7 +213,7 @@ export class UserServiceImpl implements IUserService {
 
   async verifyEmail(token: string): Promise<boolean> {
     try {
-      const payload = jwt.verify(token, config.jwt.secret) as { id: string };
+      const payload = jwt.verify(token, config.jwt.secret as Secret) as { id: string };
       const user = await this.userDAO.findById(payload.id);
       if (!user) {
         throw new ResourceNotFoundException('Utilisateur', payload.id);
@@ -247,7 +248,7 @@ export class UserServiceImpl implements IUserService {
    * @returns Le token signé.
    */
   private generateVerificationToken(user: IUser): string {
-    return jwt.sign({ id: user.id.toString() }, config.jwt.secret, {
+    return jwt.sign({ id: user.id.toString() }, config.jwt.secret as Secret, {
       expiresIn: Number(ms('24h')),
     });
   }

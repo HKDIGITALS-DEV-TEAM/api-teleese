@@ -1,3 +1,4 @@
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 import { IUser } from '@features/auth/data/schema/interfaces/IUser';
 import { IUserDTO } from '../dto/IUserDTO';
 

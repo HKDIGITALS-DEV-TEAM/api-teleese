@@ -1,8 +1,9 @@
 /* eslint-disable no-undef */
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 import { UserServiceImpl } from '@features/auth/domain/services/UserServiceImpl';
 import { UserDAOImpl } from '@features/auth/data/dao/UserDAOImpl';
-import { RegisterRequest } from '@features/auth/presentation/request/RegisterRequest';
-import { LoginRequest } from '@features/auth/presentation/request/LoginRequest';
+import { RegisterRequest } from '@features/auth/presentation/payload/RegisterRequest';
+import { LoginRequest } from '@features/auth/presentation/payload/LoginRequest';
 import { ValidationException } from '@core/exceptions/ValidationException';
 import { ResourceNotFoundException } from '@core/exceptions/ResourceNotFoundException';
 import bcrypt from 'bcrypt';

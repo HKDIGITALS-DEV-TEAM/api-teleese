@@ -1,3 +1,4 @@
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 import { IBaseEntity } from '@core/base/base-entity';
 import { ICompanyCategory } from './ICompanyCategory';
 import { IUser } from '@features/auth/data/schema/interfaces/IUser';

@@ -1,4 +1,6 @@
 /* eslint-disable no-undef */
+/*eslint-disable @typescript-eslint/no-explicit-any*/
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import { fastify } from 'src/server';

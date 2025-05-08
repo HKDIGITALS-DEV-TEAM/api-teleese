@@ -1,3 +1,4 @@
+/*eslint-disable @typescript-eslint/no-explicit-any*/
 /**
  * Interface définissant la structure du UserDTO.
  */
