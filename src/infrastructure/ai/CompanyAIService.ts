@@ -13,46 +13,46 @@ const openai = new OpenAI({ apiKey: config.openai.key });
  * Service permettant de générer dynamiquement des questions pour la création d'une compagnie.
  */
 export class CompanyAIService {
-  static async generateQuestions(category: string): Promise<ICompanyQuestion[]> {
-    const prompt = `Donne-moi 5 questions essentielles pour enregistrer une entreprise du type "${category}".
+    static async generateQuestions(category: string): Promise<ICompanyQuestion[]> {
+        const prompt = `Donne-moi 5 questions essentielles pour enregistrer une entreprise du type "${category}".
     Format JSON: [{question: "...", type: "text" | "email" | "password"| "number" | "file" | "audio" | "single_choice" | "multiple_choice", options: ["..."] }]`;
 
-    const response = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [{ role: 'system', content: prompt }],
-    });
+        const response = await openai.chat.completions.create({
+            model: 'gpt-4o',
+            messages: [{ role: 'system', content: prompt }],
+        });
 
-    return JSON.parse(response.choices[0].message?.content || '[]');
-  }
+        return JSON.parse(response.choices[0].message?.content || '[]');
+    }
 }
 
 type QuestionType = {
-  question: string;
-  type: string;
-  options?: string[];
+    question: string;
+    type: string;
+    options?: string[];
 };
 
 /**
  * Définit les questions en fonction du type d'entreprise.
  */
 const questions: Record<string, QuestionType[]> = {
-  restaurant: [
-    { question: 'Quel est le nom de votre restaurant ?', type: 'text' },
-    {
-      question: 'Quels types de plats proposez-vous ?',
-      type: 'multi-choice',
-      options: ['Français', 'Italien', 'Asiatique', 'Autres'],
-    },
-    { question: "Quels sont vos horaires d'ouverture ?", type: 'text' },
-  ],
-  hotel: [
-    { question: 'Combien de chambres votre hôtel possède-t-il ?', type: 'number' },
-    {
-      question: 'Quels services proposez-vous ?',
-      type: 'multi-choice',
-      options: ['WiFi', 'Piscine', 'Parking', 'Petit-déjeuner'],
-    },
-  ],
+    restaurant: [
+        { question: 'Quel est le nom de votre restaurant ?', type: 'text' },
+        {
+            question: 'Quels types de plats proposez-vous ?',
+            type: 'multi-choice',
+            options: ['Français', 'Italien', 'Asiatique', 'Autres'],
+        },
+        { question: "Quels sont vos horaires d'ouverture ?", type: 'text' },
+    ],
+    hotel: [
+        { question: 'Combien de chambres votre hôtel possède-t-il ?', type: 'number' },
+        {
+            question: 'Quels services proposez-vous ?',
+            type: 'multi-choice',
+            options: ['WiFi', 'Piscine', 'Parking', 'Petit-déjeuner'],
+        },
+    ],
 };
 
 /**
@@ -61,8 +61,8 @@ const questions: Record<string, QuestionType[]> = {
  * @returns {QuestionType[]} La liste des questions à poser.
  */
 export function generateCompanyQuestions(type: string): QuestionType[] {
-  return (questions[type] || []).map((q) => ({
-    ...q,
-    options: 'options' in q ? [...(q.options ?? [])] : undefined, // ✅ Vérifie si `options` existe
-  }));
+    return (questions[type] || []).map((q) => ({
+        ...q,
+        options: 'options' in q ? [...(q.options ?? [])] : undefined, // ✅ Vérifie si `options` existe
+    }));
 }

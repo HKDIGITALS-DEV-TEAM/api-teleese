@@ -14,18 +14,18 @@ const logDir = path.join(process.cwd(), 'logs');
 const logFile = path.join(logDir, `api-${env}.log`);
 
 if (!fs.existsSync(logDir)) {
-  fs.mkdirSync(logDir, { recursive: true });
+    fs.mkdirSync(logDir, { recursive: true });
 }
 
 export const logger = pino(
-  {
-    level: config.server.log,
-  },
-  isDev
-    ? pino.destination({ dest: logFile, sync: true })
-    : pino.destination({ dest: logFile, sync: false })
+    {
+        level: config.server.log,
+    },
+    isDev
+        ? pino.destination({ dest: logFile, sync: true })
+        : pino.destination({ dest: logFile, sync: false })
 );
 
 export const loggerConfig = {
-  level: config.server.log,
+    level: config.server.log,
 };

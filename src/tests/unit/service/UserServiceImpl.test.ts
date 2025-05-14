@@ -1,4 +1,5 @@
 /* eslint-disable no-undef */
+
 import { UserServiceImpl } from '@features/auth/domain/services/UserServiceImpl';
 import { UserDAOImpl } from '@features/auth/data/dao/UserDAOImpl';
 import { RegisterRequest } from '@features/auth/presentation/payload/RegisterRequest';
@@ -26,104 +27,104 @@ const userService = new UserServiceImpl();
 (userService as any).userDAO = mockUserDAO;
 
 describe('UserServiceImpl', () => {
-  const mockUser = {
-    _id: '123',
-    id: '123',
-    username: 'john_doe',
-    email: 'john@example.com',
-    firstName: 'John',
-    lastName: 'Doe',
-    password: 'hashedpassword',
-    roles: [{ role_id: '1', name: 'admin' }],
-    emailVerified: true,
-    companyRoles: [],
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  } as unknown as IUser;
+    const mockUser = {
+        _id: '123',
+        id: '123',
+        username: 'john_doe',
+        email: 'john@example.com',
+        firstName: 'John',
+        lastName: 'Doe',
+        password: 'hashedpassword',
+        roles: [{ role_id: '1', name: 'admin' }],
+        emailVerified: true,
+        companyRoles: [],
+        createdAt: new Date(),
+        updatedAt: new Date(),
+    } as unknown as IUser;
 
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
 
-  test('✅ register - Devrait créer un utilisateur', async () => {
-    mockUserDAO.findByUsernameOrEmail.mockResolvedValue(null);
-    mockUserDAO.create.mockResolvedValue(mockUser);
+    test('✅ register - Devrait créer un utilisateur', async () => {
+        mockUserDAO.findByUsernameOrEmail.mockResolvedValue(null);
+        mockUserDAO.create.mockResolvedValue(mockUser);
 
-    const request: RegisterRequest = {
-      username: 'john_doe',
-      email: 'john@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
-      password: 'password123',
-    };
+        const request: RegisterRequest = {
+            username: 'john_doe',
+            email: 'john@example.com',
+            firstName: 'John',
+            lastName: 'Doe',
+            password: 'password123',
+        };
 
-    const result = await userService.register(request);
-    expect(result.email).toBe('john@example.com');
-    expect(mockUserDAO.create).toHaveBeenCalled();
-  });
+        const result = await userService.register(request);
+        expect(result.email).toBe('john@example.com');
+        expect(mockUserDAO.create).toHaveBeenCalled();
+    });
 
-  test("❌ register - Devrait renvoyer une erreur si l'email existe déjà", async () => {
-    mockUserDAO.findByUsernameOrEmail.mockResolvedValue(mockUser);
+    test("❌ register - Devrait renvoyer une erreur si l'email existe déjà", async () => {
+        mockUserDAO.findByUsernameOrEmail.mockResolvedValue(mockUser);
 
-    const request: RegisterRequest = {
-      username: 'john_doe',
-      email: 'john@example.com',
-      firstName: 'John',
-      lastName: 'Doe',
-      password: 'password123',
-    };
+        const request: RegisterRequest = {
+            username: 'john_doe',
+            email: 'john@example.com',
+            firstName: 'John',
+            lastName: 'Doe',
+            password: 'password123',
+        };
 
-    await expect(userService.register(request)).rejects.toThrow(ValidationException);
-  });
+        await expect(userService.register(request)).rejects.toThrow(ValidationException);
+    });
 
-  test('✅ login - Devrait retourner un token pour un utilisateur valide', async () => {
-    mockUserDAO.findByUsernameOrEmail.mockResolvedValue(mockUser);
-    jest.spyOn(bcrypt, 'compare').mockImplementation(async () => true);
-    jest.spyOn(jwt, 'sign').mockImplementation(() => 'valid_token');
+    test('✅ login - Devrait retourner un token pour un utilisateur valide', async () => {
+        mockUserDAO.findByUsernameOrEmail.mockResolvedValue(mockUser);
+        jest.spyOn(bcrypt, 'compare').mockImplementation(async () => true);
+        jest.spyOn(jwt, 'sign').mockImplementation(() => 'valid_token');
 
-    const request: LoginRequest = {
-      identifier: 'john@example.com',
-      password: 'password123',
-    };
+        const request: LoginRequest = {
+            identifier: 'john@example.com',
+            password: 'password123',
+        };
 
-    const result = await userService.login(request.identifier, request.password);
-    expect(result.accessToken).toBe('valid_token');
-  });
+        const result = await userService.login(request.identifier, request.password);
+        expect(result.accessToken).toBe('valid_token');
+    });
 
-  test("❌ login - Devrait renvoyer une erreur si l'utilisateur est introuvable", async () => {
-    mockUserDAO.findByUsernameOrEmail.mockResolvedValue(null);
+    test("❌ login - Devrait renvoyer une erreur si l'utilisateur est introuvable", async () => {
+        mockUserDAO.findByUsernameOrEmail.mockResolvedValue(null);
 
-    await expect(userService.login('inconnu@example.com', 'password123')).rejects.toThrow(
-      ResourceNotFoundException
-    );
-  });
+        await expect(userService.login('inconnu@example.com', 'password123')).rejects.toThrow(
+            ResourceNotFoundException
+        );
+    });
 
-  test('✅ getProfile - Devrait récupérer un utilisateur', async () => {
-    mockUserDAO.findById.mockResolvedValue(mockUser);
-    const result = await userService.getUserById('123');
-    expect(result.email).toBe('john@example.com');
-  });
+    test('✅ getProfile - Devrait récupérer un utilisateur', async () => {
+        mockUserDAO.findById.mockResolvedValue(mockUser);
+        const result = await userService.getUserById('123');
+        expect(result.email).toBe('john@example.com');
+    });
 
-  test('✅ changePassword - Devrait changer le mot de passe', async () => {
-    mockUserDAO.findById.mockResolvedValue(mockUser);
-    mockUserDAO.update.mockResolvedValue({
-      ...mockUser,
-      password: 'new_hashed_password',
-    } as IUser);
+    test('✅ changePassword - Devrait changer le mot de passe', async () => {
+        mockUserDAO.findById.mockResolvedValue(mockUser);
+        mockUserDAO.update.mockResolvedValue({
+            ...mockUser,
+            password: 'new_hashed_password',
+        } as IUser);
 
-    const result = await userService.changePassword(mockUser.id, 'newpassword123');
+        const result = await userService.changePassword(mockUser.id, 'newpassword123');
 
-    expect(result).toBeTruthy();
-    expect(mockUserDAO.update).toHaveBeenCalled();
-  });
+        expect(result).toBeTruthy();
+        expect(mockUserDAO.update).toHaveBeenCalled();
+    });
 
-  test('✅ resetPassword - Devrait envoyer un e-mail de réinitialisation', async () => {
-    await expect(userService.resetPassword('test@example.com')).resolves.toBeTruthy();
-    expect(mockMailService.sendResetPasswordEmail).toHaveBeenCalled();
-  });
+    test('✅ resetPassword - Devrait envoyer un e-mail de réinitialisation', async () => {
+        await expect(userService.resetPassword('test@example.com')).resolves.toBeTruthy();
+        expect(mockMailService.sendResetPasswordEmail).toHaveBeenCalled();
+    });
 
-  test('✅ verifyEmail - Devrait envoyer un e-mail de vérification', async () => {
-    await expect(userService.verifyEmail('test@example.com')).resolves.toBeTruthy();
-    expect(mockMailService.sendVerificationEmail).toHaveBeenCalled();
-  });
+    test('✅ verifyEmail - Devrait envoyer un e-mail de vérification', async () => {
+        await expect(userService.verifyEmail('test@example.com')).resolves.toBeTruthy();
+        expect(mockMailService.sendVerificationEmail).toHaveBeenCalled();
+    });
 });

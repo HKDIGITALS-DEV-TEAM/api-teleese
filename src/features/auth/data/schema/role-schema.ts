@@ -6,7 +6,7 @@ import { BaseEntitySchema } from '@core/base/base-entity';
  * Schéma Mongoose pour les rôles utilisateur.
  */
 const RoleSchema: Schema<IRole> = new Schema({
-  name: { type: String, required: true, unique: true },
+    name: { type: String, required: true, unique: true },
 });
 
 // Ajouter les propriétés de base {BaseEntity}

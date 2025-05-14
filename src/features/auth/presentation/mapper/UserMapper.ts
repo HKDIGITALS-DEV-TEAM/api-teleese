@@ -7,18 +7,18 @@ import { IUserDTO } from '../dto/IUserDTO';
  * @returns Un objet DTO contenant les données nécessaires.
  */
 export function toUserDTO(user: IUser): IUserDTO {
-  return {
-    id: user.id.toString(),
-    username: user.username,
-    email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    emailVerified: user.emailVerified,
-    roles: user.roles.map((role) => role.name),
-    companyRoles: user.companyRoles,
-    createdAt: user.createdAt,
-    updatedAt: user.updatedAt,
-  };
+    return {
+        id: user.id.toString(),
+        username: user.username,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        emailVerified: user.emailVerified,
+        roles: user.roles.map((role) => role.name),
+        companyRoles: user.companyRoles,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+    };
 }
 
 /**
@@ -27,16 +27,16 @@ export function toUserDTO(user: IUser): IUserDTO {
  * @returns Une entité IUser prête à être utilisée avec Mongoose.
  */
 export function toUserEntity(dto: IUserDTO): IUser {
-  return {
-    _id: dto.id,
-    username: dto.username,
-    email: dto.email,
-    firstName: dto.firstName,
-    lastName: dto.lastName,
-    emailVerified: dto.emailVerified,
-    roles: dto.roles as any,
-    companyRoles: dto.companyRoles,
-    createdAt: dto.createdAt,
-    updatedAt: dto.updatedAt,
-  } as IUser;
+    return {
+        _id: dto.id,
+        username: dto.username,
+        email: dto.email,
+        firstName: dto.firstName,
+        lastName: dto.lastName,
+        emailVerified: dto.emailVerified,
+        roles: dto.roles as any,
+        companyRoles: dto.companyRoles,
+        createdAt: dto.createdAt,
+        updatedAt: dto.updatedAt,
+    } as IUser;
 }
